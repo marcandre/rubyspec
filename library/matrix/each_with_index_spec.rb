@@ -31,4 +31,50 @@ ruby_version_is "1.8.8" do
       a.should == @result
     end
   end
+
+  ruby_version_is "1.9.3" do
+    describe "Matrix#each_with_index with an argument" do
+      before :all do
+        @m = Matrix[ [1, 2, 3, 4], [5, 6, 7, 8] ]
+        @t = Matrix[ [1, 2], [3, 4], [5, 6], [7, 8] ]
+      end
+
+      it "raises an ArgumentError for unrecognized argument" do
+        lambda {
+          @m.each_with_index("all"){}
+        }.should raise_error(ArgumentError)
+        lambda {
+          @m.each_with_index(nil){}
+        }.should raise_error(ArgumentError)
+        lambda {
+          @m.each_with_index(:left){}
+        }.should raise_error(ArgumentError)
+      end
+
+      it "yields the rights elements when passed :diagonal" do
+        @m.each_with_index(:diagonal).to_a.should == [[1, 0, 0], [6, 1, 1]]
+        @t.each_with_index(:diagonal).to_a.should == [[1, 0, 0], [4, 1, 1]]
+      end
+
+      it "yields the rights elements when passed :lower" do
+        @m.each_with_index(:lower).to_a.should == [[1, 0, 0], [5, 1, 0], [6, 1, 1]]
+        @t.each_with_index(:lower).to_a.should == [[1, 0, 0], [3, 1, 0], [4, 1, 1], [5, 2, 0], [6, 2, 1], [7, 3, 0], [8, 3, 1]]
+      end
+
+      it "yields the rights elements when passed :strict_lower" do
+        @m.each_with_index(:strict_lower).to_a.should == [[5, 1, 0]]
+        @t.each_with_index(:strict_lower).to_a.should == [[3, 1, 0], [5, 2, 0], [6, 2, 1], [7, 3, 0], [8, 3, 1]]
+      end
+
+      it "yields the rights elements when passed :strict_upper" do
+        @m.each_with_index(:strict_upper).to_a.should == [[2, 0, 1], [3, 0, 2], [4, 0, 3], [7, 1, 2], [8, 1, 3]]
+        @t.each_with_index(:strict_upper).to_a.should == [[2, 0, 1]]
+      end
+
+      it "yields the rights elements when passed :upper" do
+        @m.each_with_index(:upper).to_a.should == [[1, 0, 0], [2, 0, 1], [3, 0, 2], [4, 0, 3], [6, 1, 1], [7, 1, 2], [8, 1, 3]]
+        @t.each_with_index(:upper).to_a.should == [[1, 0, 0], [2, 0, 1], [4, 1, 1]]
+      end
+    end
+  end
 end

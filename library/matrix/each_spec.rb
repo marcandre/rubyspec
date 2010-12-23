@@ -24,4 +24,50 @@ ruby_version_is "1.8.8" do
       a.should ==  @result
     end
   end
+
+  ruby_version_is "1.9.3" do
+    describe "Matrix#each with an argument" do
+      before :all do
+        @m = Matrix[ [1, 2, 3, 4], [5, 6, 7, 8] ]
+        @t = Matrix[ [1, 2], [3, 4], [5, 6], [7, 8] ]
+      end
+
+      it "raises an ArgumentError for unrecognized argument" do
+        lambda {
+          @m.each("all"){}
+        }.should raise_error(ArgumentError)
+        lambda {
+          @m.each(nil){}
+        }.should raise_error(ArgumentError)
+        lambda {
+          @m.each(:left){}
+        }.should raise_error(ArgumentError)
+      end
+
+      it "yields the rights elements when passed :diagonal" do
+        @m.each(:diagonal).to_a.should == [1, 6]
+        @t.each(:diagonal).to_a.should == [1, 4]
+      end
+
+      it "yields the rights elements when passed :lower" do
+        @m.each(:lower).to_a.should == [1, 5, 6]
+        @t.each(:lower).to_a.should == [1, 3, 4, 5, 6, 7, 8]
+      end
+
+      it "yields the rights elements when passed :strict_lower" do
+        @m.each(:strict_lower).to_a.should == [5]
+        @t.each(:strict_lower).to_a.should == [3, 5, 6, 7, 8]
+      end
+
+      it "yields the rights elements when passed :strict_upper" do
+        @m.each(:strict_upper).to_a.should == [2, 3, 4, 7, 8]
+        @t.each(:strict_upper).to_a.should == [2]
+      end
+
+      it "yields the rights elements when passed :upper" do
+        @m.each(:upper).to_a.should == [1, 2, 3, 4, 6, 7, 8]
+        @t.each(:upper).to_a.should == [1, 2, 4]
+      end
+    end
+  end
 end
