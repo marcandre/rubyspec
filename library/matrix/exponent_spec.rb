@@ -42,11 +42,24 @@ describe "Matrix#**" do
     end
   end
 
-  ruby_version_is "1.8.8" do
+  ruby_version_is "1.8.8" ... "1.9.3" do
     it "raises a ErrOperationNotImplemented exception for powers that aren't Integers" do
       lambda {Matrix[ [1,2], [8,2] ] ** 2.5}.should \
 	raise_error(Matrix::ErrOperationNotImplemented)
     end
   end
 
+  ruby_version_is "1.9.3" do
+    it "returns the power of a symmetric for non integer powers" do
+      a = Matrix[[5, 4], [4, 5]]
+      ((a ** 0.5) ** 2).map{|e| e.round(8)}.should == a
+      Matrix[[2, 1], [1, 2]]
+    end
+
+    it "returns the power of a non symmetric for non integer powers" do
+      a = Matrix[[7, 10], [15, 22]]
+      ((a ** 0.5) ** 2).map{|e| e.round(8)}.should == a
+      Matrix[[2, 1], [1, 2]]
+    end
+  end
 end
